@@ -1936,6 +1936,10 @@ static void ggml_compute_forward(struct ggml_compute_params * params, struct ggm
             {
                 ggml_compute_forward_pool_1d(params, tensor);
             } break;
+        case GGML_OP_POOL_ADAPTIVE_1D:
+            {
+                ggml_compute_forward_pool_adaptive_1d(params, tensor);
+            } break;
         case GGML_OP_POOL_2D:
             {
                 ggml_compute_forward_pool_2d(params, tensor);

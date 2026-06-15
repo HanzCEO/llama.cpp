@@ -1037,6 +1037,7 @@ static const char * GGML_OP_NAME[GGML_OP_COUNT] = {
     "CONV_2D_DW",
     "CONV_TRANSPOSE_2D",
     "POOL_1D",
+    "POOL_ADAPTIVE_1D",
     "POOL_2D",
     "POOL_2D_BACK",
     "UPSCALE",
@@ -1081,7 +1082,7 @@ static const char * GGML_OP_NAME[GGML_OP_COUNT] = {
     "GLU",
 };
 
-static_assert(GGML_OP_COUNT == 97, "GGML_OP_COUNT != 97");
+static_assert(GGML_OP_COUNT == 98, "GGML_OP_COUNT != 98");
 
 static const char * GGML_OP_SYMBOL[GGML_OP_COUNT] = {
     "none",
@@ -1192,7 +1193,7 @@ static const char * GGML_OP_SYMBOL[GGML_OP_COUNT] = {
     "glu(x)",
 };
 
-static_assert(GGML_OP_COUNT == 97, "GGML_OP_COUNT != 97");
+static_assert(GGML_OP_COUNT == 98, "GGML_OP_COUNT != 98");
 
 static_assert(GGML_OP_POOL_COUNT == 2, "GGML_OP_POOL_COUNT != 2");
 
@@ -4958,6 +4959,32 @@ struct ggml_tensor * ggml_pool_1d(
     ggml_set_op_params(result, params, sizeof(params));
 
     result->op     = GGML_OP_POOL_1D;
+    result->src[0] = a;
+
+    return result;
+}
+
+// ggml_pool_adaptive_1d
+
+struct ggml_tensor * ggml_pool_adaptive_1d(
+        struct ggml_context * ctx,
+        struct ggml_tensor  * a,
+        int                   target_length) {
+    // adaptive avg pool1d: input [W, H, D, B] -> output [target_length, H, D, B]
+    const int64_t ne[4] = {
+        target_length,
+        a->ne[1],
+        a->ne[2],
+        a->ne[3],
+    };
+    GGML_ASSERT(ne[0] > 0);
+
+    struct ggml_tensor * result = ggml_new_tensor(ctx, GGML_TYPE_F32, 4, ne);
+
+    int32_t params[] = { target_length };
+    ggml_set_op_params(result, params, sizeof(params));
+
+    result->op     = GGML_OP_POOL_ADAPTIVE_1D;
     result->src[0] = a;
 
     return result;

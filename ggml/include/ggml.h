@@ -541,6 +541,7 @@ extern "C" {
         GGML_OP_CONV_2D_DW,
         GGML_OP_CONV_TRANSPOSE_2D,
         GGML_OP_POOL_1D,
+        GGML_OP_POOL_ADAPTIVE_1D,
         GGML_OP_POOL_2D,
         GGML_OP_POOL_2D_BACK,
         GGML_OP_UPSCALE,
@@ -2207,6 +2208,11 @@ extern "C" {
             int                   k0, // kernel size
             int                   s0, // stride
             int                   p0); // padding
+
+    GGML_API struct ggml_tensor * ggml_pool_adaptive_1d(
+            struct ggml_context * ctx,
+            struct ggml_tensor  * a,
+            int                   target_length);
 
     // the result will have 2*p0 padding for the first dimension
     // and 2*p1 padding for the second dimension

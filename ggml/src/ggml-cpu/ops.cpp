@@ -7385,6 +7385,54 @@ void ggml_compute_forward_conv_2d_dw(
     }
 }
 
+// ggml_compute_forward_pool_adaptive_1d
+
+void ggml_compute_forward_pool_adaptive_1d(
+        const ggml_compute_params * params,
+              ggml_tensor * dst) {
+
+    const ggml_tensor * src = dst->src[0];
+
+    assert(src->type == GGML_TYPE_F32 || src->type == GGML_TYPE_F16);
+
+    if (params->ith != 0) {
+        return;
+    }
+
+    const int32_t * opts = (const int32_t *)dst->op_params;
+    const int target_length = opts[0];
+
+    const int64_t IW = src->ne[0];
+    const int64_t OW = dst->ne[0];
+    const int64_t nr = ggml_nrows(src);
+
+    for (int64_t ir = 0; ir < nr; ++ir) {
+        const char * srow_bytes =            (const char *) src->data + ir * src->nb[1];
+        float      * drow       = (float *) ((      char *) dst->data + ir * dst->nb[1]);
+
+        for (int64_t ow = 0; ow < OW; ++ow) {
+            const int start = (int)((ow    ) * IW / OW);
+            const int end   = (int)((ow + 1) * IW / OW);
+
+            float res = 0.0f;
+            int  cnt = 0;
+
+            for (int j = start; j < end; ++j) {
+                float v;
+                if (src->type == GGML_TYPE_F32) {
+                    v = ((const float *) srow_bytes)[j];
+                } else {
+                    v = GGML_CPU_FP16_TO_FP32(((const ggml_fp16_t *) srow_bytes)[j]);
+                }
+                res += v;
+                cnt++;
+            }
+
+            drow[ow] = (cnt > 0) ? (res / (float)cnt) : 0.0f;
+        }
+    }
+}
+
 // ggml_compute_forward_pool_1d_ksp
 static void ggml_compute_forward_pool_1d_ksp(
         const ggml_compute_params * params,

@@ -934,6 +934,7 @@ static struct ggml_backend_meta_split_state ggml_backend_meta_get_split_state(
             case GGML_OP_CONV_2D_DW:
             case GGML_OP_CONV_TRANSPOSE_2D:
             case GGML_OP_POOL_1D:
+            case GGML_OP_POOL_ADAPTIVE_1D:
             case GGML_OP_POOL_2D:
             case GGML_OP_POOL_2D_BACK:
             case GGML_OP_UPSCALE: {
