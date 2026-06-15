@@ -2624,8 +2624,9 @@ bool llama_model_has_encoder(const llama_model * model) {
 
 bool llama_model_has_decoder(const llama_model * model) {
     switch (model->arch) {
-        case LLM_ARCH_T5ENCODER: return false;
-        default:                 return true;
+        case LLM_ARCH_T5ENCODER:
+        case LLM_ARCH_JASPER_V2_ENCODER: return false;
+        default:                        return true;
     }
 }
 
