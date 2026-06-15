@@ -585,6 +585,11 @@ struct llama_model {
     struct ggml_tensor * dense_2_out_layers_b = nullptr;
     struct ggml_tensor * dense_3_out_layers   = nullptr;
 
+    // jasperv2 pre-backbone MLP
+    struct ggml_tensor * jasper_mlp_gate = nullptr;
+    struct ggml_tensor * jasper_mlp_up   = nullptr;
+    struct ggml_tensor * jasper_mlp_down = nullptr;
+
     // gguf metadata
     std::unordered_map<std::string, std::string> gguf_kv;
 

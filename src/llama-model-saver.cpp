@@ -403,6 +403,9 @@ void llama_model_saver::add_tensors_from_model() {
     add_tensor(model->cls_out);
     add_tensor(model->cls_out_b);
     add_tensor(model->cls_norm);
+    add_tensor(model->jasper_mlp_gate);
+    add_tensor(model->jasper_mlp_up);
+    add_tensor(model->jasper_mlp_down);
 
     for (const struct llama_layer & layer : model->layers) {
         for (size_t i = 0; i < sizeof(layer)/sizeof(struct ggml_tensor *); ++i) {
