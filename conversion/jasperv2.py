@@ -27,8 +27,9 @@ class JasperV2EncoderModel(TextModel):
         if isinstance(rope_scaling, dict):
             self.gguf_writer.add_rope_scaling_type(rope_scaling.get("type"))
             self.gguf_writer.add_rope_scaling_factor(float(rope_scaling.get("factor", 1.0)))
+        self.gguf_writer.add_context_length(self.hparams.get("max_position_embeddings", 32768))
         self.gguf_writer.add_causal_attention(False)
-        self.gguf_writer.add_dense_features_dims("2", self.hparams.get("hidden_size", 1024), 2048)
+        self.gguf_writer.add_dense_features_dims("dense_2", self.hparams.get("hidden_size", 1024), 2048)
 
     def modify_tensors(self, data_torch: Tensor, name: str, bid: int | None) -> Iterable[tuple[str, Tensor]]:
         # jasper_mlp pre-backbone FFN
