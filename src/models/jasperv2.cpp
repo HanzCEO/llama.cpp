@@ -23,7 +23,7 @@ void llama_model_jasperv2::load_arch_tensors(llama_model_loader &) {
 
     tok_embd = create_tensor(tn(LLM_TENSOR_TOKEN_EMBD, "weight"), {n_embd, n_vocab}, 0);
 
-    // Jasper MLP (pre-backbone)
+    // Jasper MLP (pre-backbone, used in CPU pre-processing)
     jasper_mlp_gate = create_tensor(tn(LLM_TENSOR_JASPER_MLP_GATE, "weight"), {n_embd,   n_ff}, 0);
     jasper_mlp_up   = create_tensor(tn(LLM_TENSOR_JASPER_MLP_UP,   "weight"), {n_embd,   n_ff}, 0);
     jasper_mlp_down = create_tensor(tn(LLM_TENSOR_JASPER_MLP_DOWN, "weight"), {  n_ff, n_embd}, 0);
@@ -66,24 +66,14 @@ llama_model_jasperv2::graph::graph(const llama_model & model, const llm_graph_pa
     ggml_tensor * cur;
     ggml_tensor * inpL;
 
+    // Build the backbone graph that accepts pre-computed embeddings.
+    // The pre-processing (embed + Jasper MLP + compression) is done on CPU.
     inpL = build_inp_embd(model.tok_embd);
 
     // inp_pos - contains the positions
     ggml_tensor * inp_pos = build_inp_pos();
 
     auto * inp_attn = build_attn_inp_no_cache();
-
-    // apply Jasper MLP (SwiGLU FFN) before the backbone
-    {
-        cur = build_ffn(inpL,
-                model.jasper_mlp_up,   NULL, NULL,
-                model.jasper_mlp_gate, NULL, NULL,
-                model.jasper_mlp_down, NULL, NULL,
-                NULL,
-                LLM_FFN_SILU, LLM_FFN_PAR, -1);
-        cb(cur, "jasper_mlp", -1);
-        inpL = cur;
-    }
 
     for (int il = 0; il < n_layer; ++il) {
         res->t_layer_inp[il] = inpL;

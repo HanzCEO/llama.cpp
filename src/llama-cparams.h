@@ -54,4 +54,9 @@ struct llama_cparams {
     void * cb_eval_user_data;
 
     llama_context * ctx_other;
+
+    // token compression (JasperV2, etc.)
+    bool     compression_enabled    = false;
+    uint32_t compression_threshold  = 80;
+    float    compression_ratio      = 0.3333f;
 };
