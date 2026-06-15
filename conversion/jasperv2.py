@@ -52,6 +52,6 @@ class JasperV2EncoderModel(TextModel):
             return
 
         # backbone weights: use standard name mapping
-        new_name = self.tensor_map.map_tensor_name(name)
+        new_name = self.map_tensor_name(name)
         if new_name is not None:
             yield new_name, data_torch
