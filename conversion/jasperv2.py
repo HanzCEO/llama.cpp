@@ -21,6 +21,10 @@ class JasperV2EncoderModel(TextModel):
         self.gguf_writer.add_feed_forward_length(self.hparams.get("intermediate_size", 2816))
         self.gguf_writer.add_head_count(self.hparams.get("num_attention_heads", 16))
         self.gguf_writer.add_head_count_kv(self.hparams.get("num_key_value_heads", 16))
+        n_kv_heads = self.hparams.get("num_key_value_heads", self.hparams.get("num_attention_heads", 16))
+        head_dim = self.hparams.get("hidden_size", 1024) // n_kv_heads
+        self.gguf_writer.add_key_length(head_dim)
+        self.gguf_writer.add_value_length(head_dim)
         self.gguf_writer.add_layer_norm_rms_eps(self.hparams.get("rms_norm_eps", 1e-6))
         self.gguf_writer.add_rope_freq_base(float(self.hparams.get("rope_theta", 1000000.0)))
         rope_scaling = self.hparams.get("rope_scaling", None)
