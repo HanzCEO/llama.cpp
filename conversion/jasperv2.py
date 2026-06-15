@@ -27,7 +27,7 @@ class JasperV2EncoderModel(TextModel):
         if isinstance(rope_scaling, dict):
             self.gguf_writer.add_rope_scaling_type(rope_scaling.get("type"))
             self.gguf_writer.add_rope_scaling_factor(float(rope_scaling.get("factor", 1.0)))
-        self.gguf_writer.add_attention_causal(False)
+        self.gguf_writer.add_causal_attention(False)
         self.gguf_writer.add_dense_2_feat_out(2048)
         self.gguf_writer.add_dense_2_feat_in(self.hparams.get("hidden_size", 1024))
 
