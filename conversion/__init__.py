@@ -239,6 +239,7 @@ TEXT_MODEL_MAP: dict[str, str] = {
     "XverseForCausalLM": "xverse",
     "YoutuForCausalLM": "deepseek",
     "YoutuVLForConditionalGeneration": "deepseek",
+    "JasperV2Encoder": "jasperv2",
     "modeling_grove_moe.GroveMoeForCausalLM": "grovemoe",
     "modeling_sarvam_moe.SarvamMoEForCausalLM": "bailingmoe",
 }
